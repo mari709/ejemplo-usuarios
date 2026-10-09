@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de usuario</title>
+</head>
+<body>
+
+    <h1>Crear cuenta</h1>
+
+    <form id="formRegistro">
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" required>
+
+        <button type="submit">Registrarse</button>
+
+    </form>
+
+    <p id="mensaje"></p>
+
+    <script>
+        const form = document.querySelector("#formRegistro");
+        const mensaje = document.querySelector("#mensaje");
+
+        form.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            const usuario = {
+                nombre: document.querySelector("#nombre").value,
+                email: document.querySelector("#email").value,
+                password: document.querySelector("#password").value
+            };
+
+            const respuesta = await fetch("/usuarios", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(usuario)
+            });
+
+            const datos = await respuesta.json();
+
+            mensaje.textContent = datos.mensaje;
+        });
+    </script>
+
+</body>
+</html>
