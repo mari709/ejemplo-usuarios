@@ -39,6 +39,46 @@ app.post("/usuarios", async (req, res) => {
         });
     });
 });
+app.post("/login", (req, res) => {
+
+    const { email, password } = req.body;
+
+    const sql = "SELECT * FROM usuario WHERE email = ?";
+
+    db.query(sql, [email], async (error, resultados) => {
+
+        if (error) {
+            console.error("Error al buscar usuario:", error);
+
+            return res.status(500).json({
+                mensaje: "Error en el servidor"
+            });
+        }
+
+        if (resultados.length === 0) {
+            return res.status(401).json({
+                mensaje: "Email o contraseña incorrectos"
+            });
+        }
+
+        const usuario = resultados[0];
+
+        const coincide = await bcrypt.compare(
+            password,
+            usuario.password
+        );
+
+        if (!coincide) {
+            return res.status(401).json({
+                mensaje: "Email o contraseña incorrectos"
+            });
+        }
+
+        res.json({
+            mensaje: `Bienvenido/a, ${usuario.nombre}`
+        });
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor funcionando en http://localhost:${PORT}`);
